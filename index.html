@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>لعبة الكشافة - 12 إلى 15 سنة (الوضع الداكن)</title>
+<style>
+  :root{
+    --bg:#0f1720;
+    --card:#0b1220;
+    --muted:#9aa4b2;
+    --accent:#00b894;
+    --accent-2:#0984e3;
+    --button-text:#ffffff;
+    --danger:#ff7675;
+  }
+  html,body{height:100%;margin:0;font-family:Tahoma, Arial, sans-serif;background:var(--bg);color:#e6eef6}
+  .app{max-width:900px;margin:18px auto;padding:18px;}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  header h1{margin:0;font-size:20px;color:var(--accent);}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 8px 24px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.03)}
+  .center{text-align:center}
+  .desc{color:var(--muted);margin-top:8px;margin-bottom:12px}
+  .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:0;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--accent);color:var(--button-text)}
+  .btn-alt{background:var(--accent-2);color:var(--button-text)}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .question{font-size:18px;margin-bottom:12px;line-height:1.6}
+  .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:12px}
+  .choice-btn{padding:14px;border-radius:12px;border:0;font-size:15px;text-align:right;direction:rtl;white-space:normal;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+  .c1{background:linear-gradient(90deg,#00b894,#00d29a);color:#071019}
+  .c2{background:linear-gradient(90deg,#0984e3,#3498ff);color:#071019}
+  .c3{background:linear-gradient(90deg,#ff9f43,#ffb86b);color:#071019}
+  .c4{background:linear-gradient(90deg,#a29bfe,#b39cff);color:#071019}
+  .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+  .progress{margin-top:12px;font-size:14px;color:var(--muted);}
+  footer{margin-top:16px;text-align:center;color:var(--muted);font-size:13px}
+  .result-score{font-size:22px;margin:10px 0;color:var(--accent);font-weight:700}
+  .small-muted{color:var(--muted);font-size:13px}
+  @media (max-width:520px){
+    .choices{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>لعبة الكشافة — فئة 12-15 سنة (الوضع الداكن)</h1>
+    <div>
+      <button id="btn-start" class="btn btn-primary">ابدأ</button>
+      <button id="btn-progress" class="btn btn-alt">عرض التقدّم</button>
+    </div>
+  </header>
+
+  <main id="main-area">
+    <div class="card center" id="welcome-card">
+      <h2>مرحبا بك!</h2>
+      <p class="desc">لعبة تعليمية قصيرة تم تصميمها للفئة 12-15. إجابات عبر الأزرار فقط — مناسبة للعرض على المتصفح.</p>
+      <div style="margin-top:12px">
+        <button id="start-quick" class="btn btn-primary">ابدأ الآن</button>
+      </div>
+      <p class="small-muted" style="margin-top:10px">يمكن حفظ التقدّم على متصفحك ومشاركته لاحقاً.</p>
+    </div>
+
+    <div class="card" id="quiz-card" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong id="q-title"></strong>
+          <div class="progress" id="progress-text"></div>
+        </div>
+        <div style="text-align:left">
+          <small id="player-name" class="small-muted"></small>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="question" id="q-prompt"></div>
+        <div class="choices" id="choices-container"></div>
+        <div class="controls">
+          <button id="skip-btn" class="btn btn-ghost">تخطي</button>
+          <button id="end-btn" class="btn btn-ghost">انهاء</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card center" id="result-card" style="display:none">
+      <h2>انتهت الأنشطة!</h2>
+      <div class="result-score" id="result-score"></div>
+      <p id="result-msg" class="desc"></p>
+      <div style="margin-top:10px">
+        <button id="retry-btn" class="btn btn-primary">إعادة المحاولة</button>
+        <button id="home-btn" class="btn btn-ghost">القائمة الرئيسية</button>
+      </div>
+    </div>
+
+    <div class="card" id="progress-card" style="display:none">
+      <h3>التقدّم المحفوظ</h3>
+      <div id="progress-list" style="margin-top:8px"></div>
+      <div style="margin-top:12px;text-align:left">
+        <button id="clear-progress" class="btn btn-ghost">مسح التقدّم</button>
+        <button id="progress-home" class="btn btn-ghost">عودة</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    تم تطوير اللعبة لتشغيلها في المتصفح. انسخ الرابط وشاركه لتلعب أنت والآخرون منفردين.
+  </footer>
+</div>
+
+<script>
+const ACTIVITIES = [
+  { title:'قراءة الخريطة والبوصلة', prompt:'أنت تنظر إلى بوصلتك وتقرأ 270°، إلى أي اتجاه ستتحرّك؟', choices:[['أ','شمال'],['ب','جنوب'],['ج','شرق'],['د','غرب']], answer:'د' },
+  { title:'عقد الحبال', prompt:'لربط حبل بسرعة لتثبيت خيمة مؤقتًا، أي عقدة مناسبة؟', choices:[['أ','عقدة القوس (Bowline)'],['ب','عقدة الحلق (Clove hitch)'],['ج','عقدة الحبل العادية'],['د','عقدة الشبك']], answer:'ب' },
+  { title:'تخطيط رحلة تخييم', prompt:'ما هو الترتيب الصحيح قبل الانطلاق في رحلة تخييم قصيرة؟', choices:[['أ','الانطلاق أولًا ثم تجهيز المعدات في الموقع'],['ب','التأكد من الطقس، تعبئة الماء والطعام، إخطار شخص بالخطة'],['ج','إرسال مجموعة للاستكشاف ثم تجميع المعدات'],['د','الاعتماد على العثور على مصادر ماء في الطريق']], answer:'ب' },
+  { title:'إسعافات أولية', prompt:'زميلك يعاني من جرح ينزف قليلاً، ماذا تفعل أولاً؟', choices:[['أ','تشغيل ماء ساخن على الجرح'],['ب','تنظيف الجرح بماء نظيف ثم وضع ضمادة'],['ج','ترك الجرح ليجف في الهواء'],['د','إعطاءه دواء دون تنظيف الجرح']], answer:'ب' },
+  { title:'العمل الجماعي والقيادة', prompt:'فريقك يختلف في الرأي حول خطة المسار، كقائد ماذا تفعل؟', choices:[['أ','تفرض رأيك بالقوة'],['ب','تؤجل القرار وتغادر'],['ج','تستمع للآراء، تختار حل وسط، توكّل مهام واضحة'],['د','تترك الفريق يتشاجر حتى يتفقوا']], answer:'ج' },
+  { title:'إشارات الاستغاثة', prompt:'طرق بسيطة لإشارة الاستغاثة عند الضياع في النهار؟', choices:[['أ','إشارات بصوت فقط دون علامات بصرية'],['ب','حفر حفرة كبيرة بدون إشارات فوقها'],['ج','استخدام مرآة أو سطح لامع لعكس الضوء، وصنع 3 إشارات متباعدة'],['د','الاستمرار في المشي دون توقف']], answer:'ج' },
+  { title:'تخزين الماء', prompt:'أي خيار أفضل لتخزين الماء أثناء رحلة يومية قصيرة؟', choices:[['أ','زجاجة بلاستيكية فقط بدون غطاء جيد'],['ب','حافظة ماء محكمة الإغلاق وحامل في الحقيبة'],['ج','وضع الماء في أكياس غير محكمة'],['د','الاعتماد على شرب الماء من الأنهار بدون تنقية']], answer:'ب' },
+  { title:'سلامة النار', prompt:'عند إشعال نار للتدفئة، ما الأهم؟', choices:[['أ','اختيار مكان بعيد عن الأشجار والمواد الجافة'],['ب','إشعال النار بالقرب من خيمة النوم'],['ج','ترك النار بدون رقابة طوال الليل'],['د','جمع مواد قابلة للاشتعال حول النار']], answer:'أ' }
+];
+
+// DOM
+const btnStart = document.getElementById('btn-start');
+const btnProgress = document.getElementById('btn-progress');
+const startQuick = document.getElementById('start-quick');
+const welcomeCard = document.getElementById('welcome-card');
+const quizCard = document.getElementById('quiz-card');
+const resultCard = document.getElementById('result-card');
+const progressCard = document.getElementById('progress-card');
+const qTitle = document.getElementById('q-title');
+const qPrompt = document.getElementById('q-prompt');
+const choicesContainer = document.getElementById('choices-container');
+const progressText = document.getElementById('progress-text');
+const playerName = document.getElementById('player-name');
+const resultScore = document.getElementById('result-score');
+const resultMsg = document.getElementById('result-msg');
+const progressList = document.getElementById('progress-list');
+
+let activities = [];
+let index = 0;
+let score = 0;
+let totalQ = 0;
+let player = '';
+
+const STORAGE_KEY = 'scout_game_12_15_dark_progress';
+
+function loadProgress(){ try{ const raw = localStorage.getItem(STORAGE_KEY); return raw? JSON.parse(raw): {}; }catch(e){return {}} }
+function saveProgress(all){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }catch(e){} }
+
+function showWelcome(){ welcomeCard.style.display=''; quizCard.style.display='none'; resultCard.style.display='none'; progressCard.style.display='none'; }
+function showQuiz(){ welcomeCard.style.display='none'; quizCard.style.display=''; resultCard.style.display='none'; progressCard.style.display='none'; renderQuestion(); }
+function showResult(){ welcomeCard.style.display='none'; quizCard.style.display='none'; resultCard.style.display=''; progressCard.style.display='none'; resultScore.textContent = `${score} من ${totalQ}`; let msg=''; if(totalQ===0) msg='لم تقم بأي أسئلة، حاول مرة أخرى!'; else{ const pct=(score/totalQ)*100; if(pct>=80) msg='عمل ممتاز! مستوى رائع 👏'; else if(pct>=50) msg='جيد! يمكنك التحسن أكثر.'; else msg='لا تقلق، جرّب مرة أخرى لتحصل على نتيجة أفضل.' } resultMsg.textContent = msg; const all = loadProgress(); all[player||'اللاعب'] = {'12-15':{score, out_of: totalQ}}; saveProgress(all); }
+
+function showProgressCard(){ welcomeCard.style.display='none'; quizCard.style.display='none'; resultCard.style.display='none'; progressCard.style.display=''; progressList.innerHTML=''; const all = loadProgress(); if(Object.keys(all).length===0){ progressList.innerHTML='<div style="color:var(--muted)">لا يوجد تقدم محفوظ.</div>'; return;} for(const u in all){ const rec=all[u]; const userDiv=document.createElement('div'); userDiv.style.marginBottom='8px'; userDiv.innerHTML = `<strong>${u}:</strong>`; for(const k in rec){ const d=rec[k]; const p=document.createElement('div'); p.style.color='var(--muted)'; p.style.marginRight='8px'; p.textContent = ` - ${k}: ${d.score}/${d.out_of}`; userDiv.appendChild(p);} progressList.appendChild(userDiv);} }
+
+function startGame(){ player = prompt('أدخل اسم اللاعب (اختياري):') || 'اللاعب'; activities = ACTIVITIES.slice(); for(let i=activities.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [activities[i],activities[j]]=[activities[j],activities[i]];} index=0; score=0; totalQ=0; playerName.textContent = player; showQuiz(); }
+
+function renderQuestion(){ const act = activities[index]; qTitle.textContent = act.title; qPrompt.textContent = act.prompt; progressText.textContent = `السؤال ${index+1} من ${activities.length}`; choicesContainer.innerHTML=''; act.choices.forEach((ch,i)=>{ const label=ch[0], text=ch[1]; const btn=document.createElement('button'); btn.className='choice-btn ' + (i===0? 'c1': i===1? 'c2': i===2? 'c3':'c4'); btn.innerHTML = `<strong>${label})</strong> ${text}`; btn.onclick = ()=>handleChoice(label); choicesContainer.appendChild(btn); }); }
+
+function handleChoice(label){ const act = activities[index]; totalQ++; if(label === act.answer){ score++; alert('إجابة صحيحة!'); } else { alert('إجابة خاطئة. الإجابة الصحيحة: ' + act.answer);} index++; if(index>=activities.length) showResult(); else renderQuestion(); }
+
+document.getElementById('skip-btn').addEventListener('click',()=>{ totalQ++; index++; if(index>=activities.length) showResult(); else renderQuestion(); });
+document.getElementById('end-btn').addEventListener('click',()=>{ if(confirm('هل تريد إنهاء الجلسة وعرض النتيجة؟')) showResult(); });
+document.getElementById('retry-btn').addEventListener('click',()=>{ startGame(); });
+document.getElementById('home-btn').addEventListener('click',()=>{ showWelcome(); });
+document.getElementById('btn-start').addEventListener('click',()=>{ startGame(); });
+document.getElementById('start-quick').addEventListener('click',()=>{ startGame(); });
+document.getElementById('btn-progress').addEventListener('click',()=>{ showProgressCard(); });
+document.getElementById('progress-home').addEventListener('click',()=>{ showWelcome(); });
+document.getElementById('clear-progress').addEventListener('click',()=>{ localStorage.removeItem(STORAGE_KEY); showProgressCard(); });
+
+showWelcome();
+</script>
+</body>
+</html>
